@@ -11,6 +11,25 @@ from livekit.agents.llm import (
 )
 from livekit.agents.voice_assistant import AssistantContext, VoiceAssistant
 from livekit.plugins import deepgram, openai, silero
+from torchaudio.transforms import Resample
+
+# Assuming the original sample rate of the audio data is known (e.g., original_sample_rate)
+# and the target sample rate is one of the supported rates by Silero VAD (8000 or 16000)
+# For this example, let's assume we want to resample to 16000 Hz
+
+original_sample_rate = 48000  # Example original sample rate
+target_sample_rate = 16000  # Target sample rate for Silero VAD
+
+# Function to resample audio data
+def resample_audio(audio_data, original_rate, target_rate):
+    resampler = Resample(original_rate, target_rate)
+    return resampler(audio_data)
+
+# Use this function to resample your audio data before passing it to Silero VAD
+# audio_data should be a tensor containing the audio samples
+# resampled_audio_data = resample_audio(audio_data, original_sample_rate, target_sample_rate)
+
+# Now, you can pass resampled_audio_data to Silero VAD
 
 
 class AssistantFunction(agents.llm.FunctionContext):
@@ -101,9 +120,7 @@ async def entrypoint(ctx: JobContext):
 
         stream = await gpt.chat(chat_context)
         await assistant.say(stream, allow_interruptions=True)
-
-        await assistant.say(stream)
-
+      
     @chat.on("message_received")
     def on_message_received(msg: rtc.ChatMessage):
         """This event triggers whenever we get a new message from the user."""
@@ -121,7 +138,7 @@ async def entrypoint(ctx: JobContext):
 
     assistant.start(ctx.room)
 
-    await asyncio.sleep(1)
+    await asyncio.sleep(5)
     await assistant.say("Hi there! How can I help?", allow_interruptions=True)
 
     while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
