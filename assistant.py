@@ -1,7 +1,5 @@
 import asyncio
 from typing import Annotated
-from dotenv import load_dotenv
-import os
 
 from livekit import agents, rtc
 from livekit.agents import JobContext, JobRequest, WorkerOptions, cli, tokenize, tts
@@ -14,11 +12,6 @@ from livekit.agents.llm import (
 from livekit.agents.voice_assistant import AssistantContext, VoiceAssistant
 from livekit.plugins import deepgram, openai, silero
 
-#LIVEKIT_URL = os.getenv('LIVEKIT_URL')
-#LIVEKIT_API_KEY = os.getenv('LIVEKIT_API_KEY')
-#LIVEKIT_API_SECRET = os.getenv('LIVEKIT_API_SECRET')
-#DEEPGRAM_API_KEY = os.getenv('DEEPGRAM_API_KEY')
-#OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 class AssistantFunction(agents.llm.FunctionContext):
     """This class is used to define functions that will be called by the assistant."""
